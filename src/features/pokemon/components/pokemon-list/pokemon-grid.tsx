@@ -1,14 +1,13 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { CellComponentProps, Grid } from "react-window";
 import type { Pokemon } from "@/core/domain/entities/pokemon.entity";
 import { PokemonCard } from "./pokemon-card";
-import { nativeEnum } from "zod/v3";
 
 const CARD_WIDTH = 120;
 const CARD_HEIGHT = 128;
-const HEADER_SIZE = 140;
+const HEADER_SIZE = 104;
 const MAX_CONTAINER_WIDTH = 1600;
 
 interface PokemonGridProps {

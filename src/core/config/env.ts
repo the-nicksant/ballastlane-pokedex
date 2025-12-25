@@ -21,7 +21,6 @@ const envSchema = z.object({
 
   // External API configuration
   POKEAPI_BASE_URL: z.url().default("https://pokeapi.co/api/v2"),
-  SEARCH_POKEMON_URL: z.url().default("https://pokemon-service-ucql.onrender.com/api/v1/pokemon/search"),
   POKEAPI_CACHE_DURATION: z.coerce.number().int().positive().default(3600),
 });
 
@@ -33,7 +32,6 @@ function parseEnv() {
       DATABASE_PATH: process.env.DATABASE_PATH,
       JWT_SECRET: process.env.JWT_SECRET,
       SESSION_DURATION: process.env.SESSION_DURATION,
-      SEARCH_POKEMON_URL: process.env.SEARCH_POKEMON_URL,
       POKEAPI_BASE_URL: process.env.POKEAPI_BASE_URL,
       POKEAPI_CACHE_DURATION: process.env.POKEAPI_CACHE_DURATION,
     });

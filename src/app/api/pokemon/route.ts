@@ -1,7 +1,7 @@
 import { NextRequest } from "next/server";
 import { z } from "zod";
 import { GetPokemonListUseCase } from "@/core/use-cases/pokemon/get-pokemon-list.use-case";
-import { pokemonRepository } from "@/infrastructure/http/pokeapi/pokemon.repository.impl";
+import { pokemonSQLiteRepository } from "@/infrastructure/database/sqlite/repositories/pokemon.repository.impl";
 import { successResponse, errorResponse, HTTP_STATUS } from "@/lib/api-response";
 import { handleError } from "@/lib/error-handler";
 import { checkRateLimit, getClientIdentifier, RATE_LIMITS } from "@/lib/rate-limit";
@@ -40,7 +40,7 @@ export async function GET(request: NextRequest) {
 
     const validatedParams = querySchema.parse(params);
 
-    const useCase = new GetPokemonListUseCase(pokemonRepository);
+    const useCase = new GetPokemonListUseCase(pokemonSQLiteRepository);
     const result = await useCase.execute(validatedParams);
 
     return successResponse(result, HTTP_STATUS.OK);

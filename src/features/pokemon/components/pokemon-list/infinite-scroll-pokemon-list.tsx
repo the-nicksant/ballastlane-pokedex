@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { PokemonGrid } from "./pokemon-grid";
 import { PokemonListError } from "./pokemon-list-error";
 import { pokemonApiService } from "../../services/pokemon-api.service";
@@ -18,6 +19,7 @@ type InfiniteQueryPage = {
 
 function Component() {
   const pageLimit = 50;
+  const containerRef = useRef<HTMLDivElement>(null);
 
   const [sortBy] = useQueryState('sortBy')
   const [sortOrder] = useQueryState('order')
@@ -61,6 +63,25 @@ function Component() {
     }
   };
 
+  useEffect(() => {
+    const checkAndFillContainer = () => {
+      if (!containerRef.current || isFetchingNextPage || !hasNextPage) return;
+
+      const gridElement = containerRef.current.querySelector('[style*="overflow"]') as HTMLElement;
+      if (!gridElement) return;
+
+      const hasScroll = gridElement.scrollHeight > gridElement.clientHeight;
+
+      if (!hasScroll && hasNextPage) {
+        fetchNextPage();
+      }
+    };
+
+    const timeoutId = setTimeout(checkAndFillContainer, 100);
+
+    return () => clearTimeout(timeoutId);
+  }, [pokemons.length, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center py-20">
@@ -75,7 +96,7 @@ function Component() {
   }
 
   return (
-    <div>
+    <div ref={containerRef}>
       <PokemonGrid
         pokemon={pokemons}
         onScrollEnd={handleScrollEnd}

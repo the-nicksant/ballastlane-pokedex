@@ -1,8 +1,8 @@
 "use client";
 
-import { memo } from "react";
-import Link from "next/link";
+import { memo, useState } from "react";
 import Image from "next/image";
+import { HoverPrefetchLink } from "@/components/hover-prefetch-link";
 import { formatPokemonId } from "@/lib/pokemon-utils";
 import { APP_ROUTES } from "@/core/config/constants";
 import type { Pokemon } from "@/core/domain/entities/pokemon.entity";
@@ -16,13 +16,18 @@ export const PokemonCard = memo(function PokemonCard({
   pokemon,
 }: PokemonCardProps) {
   const { triggerLight } = useHapticFeedback();
+  const [imageError, setImageError] = useState(false);
 
   const handleClick = () => {
     triggerLight();
   };
 
+  const handleImageError = () => {
+    setImageError(true);
+  };
+
   return (
-    <Link
+    <HoverPrefetchLink
       href={APP_ROUTES.POKEMON_DETAIL(pokemon.id)}
       onClick={handleClick}
       className="block group"
@@ -36,14 +41,21 @@ export const PokemonCard = memo(function PokemonCard({
 
         <div className="flex items-center justify-center pt-4">
           <div className="relative h-[85px] w-[85px] z-20">
-            <Image
-              src={pokemon.spriteUrl}
-              alt={pokemon.name}
-              fill
-              className="object-contain pixelated"
-              loading="lazy"
-              sizes="85px"
-            />
+            {imageError ? (
+              <div className="flex items-center justify-center w-full h-full">
+                <div className="text-4xl opacity-30">❓</div>
+              </div>
+            ) : (
+              <Image
+                src={pokemon.spriteUrl}
+                alt={pokemon.name}
+                fill
+                className="object-contain pixelated"
+                loading="lazy"
+                sizes="85px"
+                onError={handleImageError}
+              />
+            )}
           </div>
         </div>
 
@@ -53,6 +65,6 @@ export const PokemonCard = memo(function PokemonCard({
           </p>
         </div>
       </div>
-    </Link>
+    </HoverPrefetchLink>
   );
 });

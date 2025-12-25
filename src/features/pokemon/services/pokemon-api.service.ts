@@ -1,9 +1,9 @@
 import type { PokemonListResult } from "@/core/domain/entities/pokemon.entity";
-import type { PokemonSearchResult } from "../types/search.types";
 
 interface GetPokemonListParams {
   offset?: number;
   limit?: number;
+  search?: string;
   sortBy?: "number" | "name";
   order?: "asc" | "desc";
 }
@@ -17,6 +17,9 @@ export const pokemonApiService = {
     }
     if (params.limit !== undefined) {
       searchParams.set("limit", params.limit.toString());
+    }
+    if (params.search) {
+      searchParams.set("search", params.search);
     }
     if (params.sortBy) {
       searchParams.set("sortBy", params.sortBy);
@@ -33,21 +36,6 @@ export const pokemonApiService = {
 
     const data = await response.json();
     return data.data as PokemonListResult;
-  },
-
-  async search(query: string): Promise<PokemonSearchResult[]> {
-    if (!query || query.trim().length === 0) {
-      return [];
-    }
-
-    const response = await fetch(`/api/pokemon/search?name=${encodeURIComponent(query)}`);
-
-    if (!response.ok) {
-      throw new Error("Failed to search Pokemon");
-    }
-
-    const data = await response.json();
-    return data.data as PokemonSearchResult[];
   },
 
   async getById(id: number): Promise<any> {

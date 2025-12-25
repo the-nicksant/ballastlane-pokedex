@@ -222,3 +222,41 @@ code improvements and revalidation:
 2. Implement a useDebouce customHook for optmizing this code
 3. Use react query for caching requests and handling server state
 4. keep the visual coherence by using the same sprite images that are being used in the pokemon cards`
+
+=========
+
+Refatoring data flow to use local pokemon data for searching and listing
+prompt:
+Great. Now we are going to make a massive refactoring in the way we use that Pokemon data.
+
+the official pokeApi is quite limited in terms of params and options. Thats why we had to implement a thid-party api. But it didnt solve our problem, since we cannot make server-side ordering properly.
+
+We will have to restructure this part of our application, initially making an http request to PokeApi an then loading all the pokemons inside our database. We dont have to save all information, just the most important such as name,
+id, type, etc...
+So the flow steps would be:
+1. Fetching all the pokemons (making a reqeust to see the total and them getting all of em)
+2. loading in our SQLIte database
+3. The search and list will use our local pokemon data, achieveing sorting and removing third-party dependencies
+4. Complete details of the pokemons (detail page) will still use PokeApi for fresh data.
+
+Lets plan on how to implement this
+
+==========
+Some fixes in the migration flow
+
+Ok, we have to make some updates in the seeding flow that is not working properly.
+
+The migrations are only running with a command in the terminal, not when the app is started. The fs doesnt work properly when the application is being build and this is expected.
+
+But the seeding logic only works if my application is up and running, because I need the env variables to be setup.
+You have to move my seeding logic to the startup of the project. As soon as the app start running the data must be get from pokeapi and inserted into the database, with the env variables properly configured.
+
+
+
+Small but relevant UI refinements prompt:
+Before continuing I want to make 2 fixes in my list component.
+
+1. When the list is rendered the first time in larger devices, it gets loaded with half the capacity of the screen, but as the list doesnt need scrolling (because all the content is inside the container) the 'fetchNextPage' function
+is never being called. I want you to make a simple verification to always make sure we have our pokemon list all over the container making the infinite scroll work properly.
+
+2. Some of the pokemons, specially the newer ones doesnt have a sprite, its not being found. I want you to display a default pokemon placeholder when the pokemon sprite is not found

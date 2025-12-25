@@ -20,6 +20,13 @@ export function runMigrations(db: Database.Database): void {
   // Get migrations directory (relative to this file)
   const migrationsDir = __dirname;
 
+  // Check if migrations directory exists (may not exist during build)
+  if (!fs.existsSync(migrationsDir)) {
+    console.warn(`Migrations directory not found: ${migrationsDir}`);
+    console.warn("Skipping migrations (this is normal during build)");
+    return;
+  }
+
   // Get all migration files
   const migrationFiles = fs
     .readdirSync(migrationsDir)

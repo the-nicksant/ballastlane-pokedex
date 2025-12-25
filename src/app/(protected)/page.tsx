@@ -12,7 +12,9 @@ export const metadata: Metadata = {
 export default function Home() {
   return (
     <div className="min-h-screen bg-white">
-      <PokemonListHeader />
+      <Suspense fallback={null}>
+        <PokemonListHeader />
+      </Suspense>
 
       <main className="container mx-auto max-w-[1600px]">
         <Suspense fallback={<PokemonListSkeleton />}>

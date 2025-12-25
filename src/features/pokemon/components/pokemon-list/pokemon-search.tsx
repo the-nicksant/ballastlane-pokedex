@@ -6,11 +6,60 @@ import { Input } from "@/components/ui/input";
 import { Search, Loader2 } from "lucide-react";
 import { useDebounce } from "../../hooks/use-debounce";
 import { pokemonApiService } from "../../services/pokemon-api.service";
-import type { PokemonSearchResult } from "../../types/search.types";
+import type { Pokemon } from "@/core/domain/entities/pokemon.entity";
 import Link from "next/link";
 import Image from "next/image";
 import { formatPokemonId } from "@/lib/pokemon-utils";
 import { queryClient } from "@/app/layout";
+
+interface SearchResultItemProps {
+  pokemon: Pokemon;
+  index: number;
+  selectedIndex: number;
+  onClick: () => void;
+}
+
+function SearchResultItem({ pokemon, index, selectedIndex, onClick }: SearchResultItemProps) {
+  const [imageError, setImageError] = useState(false);
+
+  return (
+    <Link
+      key={pokemon.id}
+      href={`/pokemon/${pokemon.id}`}
+      onClick={onClick}
+      role="option"
+      aria-selected={index === selectedIndex}
+      className={`flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
+        index === selectedIndex ? "bg-gray-50" : ""
+      }`}
+    >
+      <div className="relative w-12 h-12 shrink-0">
+        {imageError ? (
+          <div className="flex items-center justify-center w-full h-full">
+            <div className="text-2xl opacity-30">❓</div>
+          </div>
+        ) : (
+          <Image
+            src={pokemon.spriteUrl}
+            alt={pokemon.name}
+            fill
+            className="object-contain pixelated"
+            sizes="48px"
+            onError={() => setImageError(true)}
+          />
+        )}
+      </div>
+      <div className="flex flex-col">
+        <span className="text-sm font-medium capitalize text-gray-900">
+          {pokemon.name}
+        </span>
+        <span className="text-xs text-gray-500">
+          {formatPokemonId(pokemon.id)}
+        </span>
+      </div>
+    </Link>
+  );
+}
 
 function Component() {
   const [query, setQuery] = useState("");
@@ -22,12 +71,14 @@ function Component() {
 
   const debouncedQuery = useDebounce(query, 300);
 
-  const { data: results = [], isLoading } = useQuery({
+  const { data, isLoading } = useQuery({
     queryKey: ["pokemon-search", debouncedQuery],
-    queryFn: () => pokemonApiService.search(debouncedQuery),
+    queryFn: () => pokemonApiService.getList({ search: debouncedQuery, limit: 10 }),
     enabled: debouncedQuery.trim().length > 0,
     staleTime: 1000 * 60 * 5,
   });
+
+  const results: Pokemon[] = data?.pokemon ?? [];
 
   useEffect(() => {
     if (debouncedQuery.trim() && results.length > 0) {
@@ -126,34 +177,13 @@ function Component() {
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 max-h-[400px] overflow-y-auto z-50"
         >
           {results.map((pokemon, index) => (
-            <Link
+            <SearchResultItem
               key={pokemon.id}
-              href={`/pokemon/${pokemon.id}`}
+              pokemon={pokemon}
+              index={index}
+              selectedIndex={selectedIndex}
               onClick={handleResultClick}
-              role="option"
-              aria-selected={index === selectedIndex}
-              className={`flex items-center gap-3 p-3 hover:bg-gray-50 transition-colors border-b border-gray-100 last:border-b-0 ${
-                index === selectedIndex ? "bg-gray-50" : ""
-              }`}
-            >
-              <div className="relative w-12 h-12 shrink-0">
-                <Image
-                  src={pokemon.spriteUrl}
-                  alt={pokemon.name}
-                  fill
-                  className="object-contain pixelated"
-                  sizes="48px"
-                />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-sm font-medium capitalize text-gray-900">
-                  {pokemon.name}
-                </span>
-                <span className="text-xs text-gray-500">
-                  {formatPokemonId(pokemon.id)}
-                </span>
-              </div>
-            </Link>
+            />
           ))}
         </div>
       )}

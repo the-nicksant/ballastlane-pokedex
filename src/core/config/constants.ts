@@ -11,6 +11,7 @@ export const API_ROUTES = {
   AUTH: {
     LOGIN: "/api/auth/login",
     LOGOUT: "/api/auth/logout",
+    VERIFY: "/api/auth/verify",
   },
   POKEMON: {
     LIST: "/api/pokemon",

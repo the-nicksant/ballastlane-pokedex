@@ -10,30 +10,23 @@ import { AUTH_COOKIE_NAME, APP_ROUTES } from "@/core/config/constants";
 export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  // Get session cookie
   const sessionCookie = request.cookies.get(AUTH_COOKIE_NAME);
   const sessionToken = sessionCookie?.value;
 
-  // Check if user is authenticated
   const isAuthenticated = await verifySession(sessionToken);
 
-  // Define route types
   const isLoginPage = pathname === APP_ROUTES.LOGIN;
   const isProtectedRoute = pathname.startsWith("/(protected)") ||
                           (pathname !== APP_ROUTES.LOGIN && pathname !== "/api/auth/login");
 
-  // Redirect logic
   if (isLoginPage && isAuthenticated) {
-    // Logged in users accessing login page → redirect to home
     return NextResponse.redirect(new URL(APP_ROUTES.HOME, request.url));
   }
 
   if (isProtectedRoute && !isAuthenticated && !pathname.startsWith("/api")) {
-    // Unauthenticated users accessing protected routes → redirect to login
     return NextResponse.redirect(new URL(APP_ROUTES.LOGIN, request.url));
   }
 
-  // Allow the request to proceed
   return NextResponse.next();
 }
 
@@ -53,7 +46,6 @@ async function verifySession(token: string | undefined): Promise<boolean> {
     await jwtVerify(token, secret);
     return true;
   } catch (error) {
-    // Token is invalid or expired
     return false;
   }
 }
