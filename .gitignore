@@ -41,8 +41,13 @@ yarn-error.log*
 next-env.d.ts
 
 # database
-/data/*.sqlite
+# Ignore SQLite WAL files (temporary)
 /data/*.sqlite-journal
 /data/*.sqlite-wal
 /data/*.sqlite-shm
+
+# Commit the main database.sqlite file for production (serverless deployment)
+# Uncomment the line below if you want to ignore the database in development
+# /data/database.sqlite
+
 !/data/.gitkeep

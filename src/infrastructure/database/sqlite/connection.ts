@@ -29,9 +29,15 @@ class DatabaseConnection {
       // Get database path from environment variable or use default
       const dbPath = process.env.DATABASE_PATH || "./data/database.sqlite";
       const absolutePath = path.resolve(process.cwd(), dbPath);
+      const isProduction = process.env.NODE_ENV === "production";
+      const isTest = process.env.NODE_ENV === "test";
+      const isInMemory = dbPath === ":memory:";
 
-      // Ensure the data directory exists (skip for in-memory databases)
-      if (dbPath !== ":memory:") {
+      // Check if database already exists
+      const dbExists = !isInMemory && fs.existsSync(absolutePath);
+
+      // Ensure the data directory exists (skip for in-memory databases and production)
+      if (!isInMemory && !isProduction) {
         const dataDir = path.dirname(absolutePath);
         if (!fs.existsSync(dataDir)) {
           fs.mkdirSync(dataDir, { recursive: true });
@@ -40,33 +46,49 @@ class DatabaseConnection {
       }
 
       console.log(`Connecting to SQLite database: ${absolutePath}`);
-
-      // Create database connection
-      const db = new Database(absolutePath, {
-        verbose: process.env.NODE_ENV === "development" ? console.log : undefined,
-      });
-
-      // Enable WAL mode for better concurrency (skip for in-memory and test mode)
-      if (dbPath !== ":memory:" && process.env.NODE_ENV !== "test") {
-        db.pragma("journal_mode = WAL");
+      if (isProduction && dbExists) {
+        console.log("📦 Using pre-built database (production mode)");
       }
 
-      // Enable foreign keys (must be done before migrations)
+      // Create database connection
+      // In production, use readonly mode to prevent write attempts
+      const db = new Database(absolutePath, {
+        verbose: process.env.NODE_ENV === "development" ? console.log : undefined,
+        readonly: isProduction && dbExists,
+      });
+
+      // Enable foreign keys (readonly safe)
       db.pragma("foreign_keys = ON");
 
-      // Run migrations
-      runMigrations(db);
+      // Only run migrations if:
+      // 1. In development mode, OR
+      // 2. Database doesn't exist yet, OR
+      // 3. In test mode with in-memory database
+      const shouldRunMigrations = !isProduction || !dbExists || (isTest && isInMemory);
+
+      if (shouldRunMigrations) {
+        console.log("🔄 Running migrations...");
+
+        // Enable WAL mode for better concurrency (skip for in-memory and test mode)
+        if (!isInMemory && !isTest) {
+          db.pragma("journal_mode = WAL");
+        }
+
+        runMigrations(db);
+      } else {
+        console.log("⏭️  Skipping migrations (using pre-built database)");
+      }
 
       // Start automatic session cleanup (runs every hour) - skip in test mode
-      if (process.env.NODE_ENV !== "test") {
+      if (!isTest) {
         startSessionCleanup(db);
       }
 
-      console.log("Database initialized successfully");
+      console.log("✅ Database initialized successfully");
 
       return db;
     } catch (error) {
-      console.error("Failed to initialize database:", error);
+      console.error("❌ Failed to initialize database:", error);
       throw error;
     }
   }

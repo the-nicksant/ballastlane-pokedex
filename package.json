@@ -4,14 +4,16 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "pnpm db:build && next build",
     "start": "next start",
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
-    "db:init": "tsx scripts/init-db.ts",
     "test:coverage": "vitest run --coverage",
+    "db:init": "tsx scripts/init-db.ts",
+    "db:build": "tsx scripts/build-db.ts",
+    "db:reset": "rm -f data/database.sqlite* && pnpm db:build",
     "postinstall": "cd node_modules/.pnpm/better-sqlite3@12.5.0/node_modules/better-sqlite3 && npm run build-release || true"
   },
   "dependencies": {

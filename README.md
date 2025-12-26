@@ -367,15 +367,17 @@ Login Flow:
 | Script | Description |
 |--------|-------------|
 | `pnpm dev` | Start development server |
-| `pnpm build` | Build for production |
+| `pnpm build` | Build database + production bundle |
 | `pnpm start` | Start production server |
 | `pnpm test` | Run all tests |
 | `pnpm test:watch` | Run tests in watch mode |
 | `pnpm test:ui` | Open Vitest UI |
 | `pnpm test:coverage` | Generate coverage report |
-| `pnpm db:init` | Initialize database with migrations |
-| `pnpm db:reset` | Reset database to clean state |
+| `pnpm db:build` | Build production database |
+| `pnpm db:reset` | Reset and rebuild database |
 | `pnpm lint` | Run ESLint |
+
+> **Note:** For deployment instructions and troubleshooting, see [Deployment Guide](./docs/deployment.md)
 
 ---
 
