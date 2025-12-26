@@ -11,8 +11,6 @@
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
     "test:coverage": "vitest run --coverage",
-    "db:init": "tsx scripts/init-db.ts",
-    "db:reset": "rm -f data/database.sqlite* && pnpm db:init",
     "postinstall": "cd node_modules/.pnpm/better-sqlite3@12.5.0/node_modules/better-sqlite3 && npm run build-release || true"
   },
   "dependencies": {

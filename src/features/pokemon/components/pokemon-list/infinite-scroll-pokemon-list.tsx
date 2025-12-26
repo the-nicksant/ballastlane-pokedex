@@ -5,10 +5,9 @@ import { PokemonGrid } from "./pokemon-grid";
 import { PokemonListError } from "./pokemon-list-error";
 import { pokemonApiService } from "../../services/pokemon-api.service";
 
-import { QueryClientProvider, useInfiniteQuery } from '@tanstack/react-query'
+import { useInfiniteQuery } from '@tanstack/react-query'
 import { useQueryState } from 'nuqs'
 import { Pokemon } from "@/core/domain/entities/pokemon.entity";
-import { queryClient } from "@/app/layout";
 
 type InfiniteQueryPage = {
   data: Pokemon[],
@@ -17,7 +16,7 @@ type InfiniteQueryPage = {
   prevCursor: number | undefined,
 }
 
-function Component() {
+export function InfiniteScrollPokemonList() {
   const pageLimit = 50;
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -107,5 +106,3 @@ function Component() {
     </div>
   );
 }
-
-export const InfiniteScrollPokemonList = () => <QueryClientProvider client={queryClient}><Component /></QueryClientProvider>;

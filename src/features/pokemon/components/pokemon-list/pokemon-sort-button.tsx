@@ -38,10 +38,10 @@ export function PokemonSortButton() {
           className="bg-white h-8 w-8 rounded-[16px] border-0 shadow-[inset_0px_1px_3px_1px_rgba(0,0,0,0.25)] hover:bg-white hover:scale-105 active:scale-95 transition-all"
           title="Sort Pokemon"
         >
-          <ArrowUpDown className="h-4 w-4 text-[#DC0A2D]" />
+          <ArrowUpDown className="h-4 w-4 text-pokemon-red" />
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="font-[Poppins,sans-serif]">
+      <DropdownMenuContent align="end" className="font-poppins">
         <DropdownMenuItem
           onClick={() => handleSort("number")}
           className="cursor-pointer"

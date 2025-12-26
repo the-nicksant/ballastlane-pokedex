@@ -82,6 +82,27 @@ class DatabaseConnection {
       console.log("Database connection closed");
     }
   }
+
+  /**
+   * Override the database instance (for testing purposes only)
+   * @param db Database instance to use
+   */
+  static setInstance(db: Database.Database): void {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("setInstance() can only be called in test environment");
+    }
+    DatabaseConnection.instance = db;
+  }
+
+  /**
+   * Reset the database instance (for testing purposes only)
+   */
+  static resetInstance(): void {
+    if (process.env.NODE_ENV !== "test") {
+      throw new Error("resetInstance() can only be called in test environment");
+    }
+    DatabaseConnection.instance = null;
+  }
 }
 
 // Export the database instance

@@ -23,7 +23,7 @@ export const API_ROUTES = {
 export const APP_ROUTES = {
   LOGIN: "/login",
   HOME: "/",
-  POKEMON_DETAIL: (id: string | number) => `/pokemon/${id}`,
+  POKEMON_DETAIL: (id: string | number) => `/pokemon?id=${id}`,
 } as const;
 
 // Pagination

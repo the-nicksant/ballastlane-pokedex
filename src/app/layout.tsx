@@ -1,10 +1,8 @@
-
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Poppins } from "next/font/google";
 import { NuqsAdapter } from 'nuqs/adapters/next/app'
-import { QueryClient } from "@tanstack/react-query";
+import { QueryProvider } from "@/providers/query-provider";
 import "./globals.css";
-
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -22,9 +20,10 @@ const poppins = Poppins({
   weight: ["400", "700"],
 });
 
-
-
-export const queryClient = new QueryClient()
+export const metadata: Metadata = {
+  title: "BallastLane Pokedex",
+  description: "BallastLane Technical Assessment Pokedex",
+}
 
 export default function RootLayout({
   children,
@@ -37,7 +36,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${poppins.variable} antialiased`}
       >
         <NuqsAdapter>
-          {children}
+          <QueryProvider>
+            {children}
+          </QueryProvider>
         </NuqsAdapter>
       </body>
     </html>

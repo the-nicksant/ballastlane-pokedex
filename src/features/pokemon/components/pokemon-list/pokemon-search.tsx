@@ -1,16 +1,18 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { QueryClientProvider, useQuery } from "@tanstack/react-query";
-import { Input } from "@/components/ui/input";
+import Link from "next/link";
+import Image from "next/image";
 import { Search, Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
+
+import { Input } from "@/components/ui/input";
 import { useDebounce } from "../../hooks/use-debounce";
 import { pokemonApiService } from "../../services/pokemon-api.service";
 import type { Pokemon } from "@/core/domain/entities/pokemon.entity";
-import Link from "next/link";
-import Image from "next/image";
 import { formatPokemonId } from "@/lib/pokemon-utils";
-import { queryClient } from "@/app/layout";
+import { SEARCH_DEBOUNCE_MS, SEARCH_RESULTS_LIMIT, SEARCH_CACHE_TIME_MS } from "../../constants/ui-constants";
 
 interface SearchResultItemProps {
   pokemon: Pokemon;
@@ -25,7 +27,7 @@ function SearchResultItem({ pokemon, index, selectedIndex, onClick }: SearchResu
   return (
     <Link
       key={pokemon.id}
-      href={`/pokemon/${pokemon.id}`}
+      href={`/pokemon?id=${pokemon.id}`}
       onClick={onClick}
       role="option"
       aria-selected={index === selectedIndex}
@@ -61,7 +63,8 @@ function SearchResultItem({ pokemon, index, selectedIndex, onClick }: SearchResu
   );
 }
 
-function Component() {
+export function PokemonSearch() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
@@ -69,13 +72,13 @@ function Component() {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  const debouncedQuery = useDebounce(query, 300);
+  const debouncedQuery = useDebounce(query, SEARCH_DEBOUNCE_MS);
 
   const { data, isLoading } = useQuery({
     queryKey: ["pokemon-search", debouncedQuery],
-    queryFn: () => pokemonApiService.getList({ search: debouncedQuery, limit: 10 }),
+    queryFn: () => pokemonApiService.getList({ search: debouncedQuery, limit: SEARCH_RESULTS_LIMIT }),
     enabled: debouncedQuery.trim().length > 0,
-    staleTime: 1000 * 60 * 5,
+    staleTime: SEARCH_CACHE_TIME_MS,
   });
 
   const results: Pokemon[] = data?.pokemon ?? [];
@@ -120,7 +123,9 @@ function Component() {
       case "Enter":
         e.preventDefault();
         if (selectedIndex >= 0 && results[selectedIndex]) {
-          window.location.href = `/pokemon/${results[selectedIndex].id}`;
+          router.push(`/pokemon?id=${results[selectedIndex].id}`);
+          setIsOpen(false);
+          setQuery("");
         }
         break;
       case "Escape":
@@ -149,7 +154,7 @@ function Component() {
 
   return (
     <div className="relative flex-1">
-      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#DC0A2D] z-10" />
+      <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pokemon-red z-10" />
       <Input
         ref={inputRef}
         type="search"
@@ -157,7 +162,7 @@ function Component() {
         value={query}
         onChange={handleInputChange}
         onKeyDown={handleKeyDown}
-        className="pl-10 bg-white h-8 text-[10px] font-[Poppins,sans-serif] rounded-md border-0 shadow-[inset_0px_1px_3px_1px_rgba(0,0,0,0.25)]"
+        className="pl-10 bg-white h-8 text-[10px] font-poppins rounded-md border-0 shadow-[inset_0px_1px_3px_1px_rgba(0,0,0,0.25)]"
         aria-label="Search Pokemon"
         aria-autocomplete="list"
         aria-controls="pokemon-search-results"
@@ -166,7 +171,7 @@ function Component() {
       />
 
       {isLoading && (
-        <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#DC0A2D] animate-spin" />
+        <Loader2 className="absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-pokemon-red animate-spin" />
       )}
 
       {isOpen && results.length > 0 && (
@@ -193,11 +198,9 @@ function Component() {
           ref={dropdownRef}
           className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-lg border border-gray-200 p-4 text-center z-50"
         >
-          <p className="text-sm text-gray-500">No Pokemon found for "{query}"</p>
+          <p className="text-sm text-gray-500">No Pokemon found for &quot;{query}&quot;</p>
         </div>
       )}
     </div>
   );
 }
-
-export const PokemonSearch = () => <QueryClientProvider client={queryClient}><Component /></QueryClientProvider>;

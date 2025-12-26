@@ -1,45 +1,32 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useQueryState, parseAsInteger } from "nuqs";
 import type { PokemonDetail } from "@/core/domain/entities/pokemon.entity";
 import { PokemonDetailHeader } from "./pokemon-detail-header";
-import { PokemonImage } from "./pokemon-image";
+import { PokemonImageCarousel } from "./pokemon-image-carousel";
 import { PokemonInfo } from "./pokemon-info";
 import { PokemonStats } from "./pokemon-stats";
 import { TYPE_COLORS } from "@/core/config/constants";
 
 interface PokemonDetailViewProps {
   pokemon: PokemonDetail;
+  previousPokemon: PokemonDetail | null;
+  nextPokemon: PokemonDetail | null;
 }
 
-export function PokemonDetailView({ pokemon }: PokemonDetailViewProps) {
-  const router = useRouter();
-  const [isTransitioning, setIsTransitioning] = useState(false);
-  const [direction, setDirection] = useState<"left" | "right" | null>(null);
-
+export function PokemonDetailView({
+  pokemon,
+  previousPokemon,
+  nextPokemon,
+}: PokemonDetailViewProps) {
+  const [, setId] = useQueryState("id", parseAsInteger);
   const primaryType = pokemon.types[0];
   const backgroundColor = TYPE_COLORS[primaryType] || "#A8A878";
 
-  const handlePrevious = () => {
-    if (pokemon.id > 1 && !isTransitioning) {
-      setDirection("right");
-      setIsTransitioning(true);
-      setTimeout(() => {
-        router.push(`/pokemon/${pokemon.id - 1}`);
-      }, 300);
-    }
+  const handleNavigate = (targetId: number) => {
+    setId(targetId);
   };
 
-  const handleNext = () => {
-    if (!isTransitioning) {
-      setDirection("left");
-      setIsTransitioning(true);
-      setTimeout(() => {
-        router.push(`/pokemon/${pokemon.id + 1}`);
-      }, 300);
-    }
-  };
 
   return (
     <div
@@ -49,15 +36,14 @@ export function PokemonDetailView({ pokemon }: PokemonDetailViewProps) {
       }}
     >
       <PokemonDetailHeader pokemon={pokemon} backgroundColor={backgroundColor} />
-      <PokemonImage
-        pokemon={pokemon}
-        onPrevious={handlePrevious}
-        onNext={handleNext}
-        isTransitioning={isTransitioning}
-        direction={direction}
+      <PokemonImageCarousel
+        currentPokemon={pokemon}
+        previousPokemon={previousPokemon}
+        nextPokemon={nextPokemon}
+        onNavigate={handleNavigate}
       />
-     
-      <div className="bg-white rounded-t-[32px] px-6 pt-16 pb-6 max-w-xl">
+
+      <div className="bg-white rounded-t-[32px] px-6 pt-16 pb-6 max-w-xl w-full">
         <PokemonInfo pokemon={pokemon} />
         <PokemonStats stats={pokemon.stats} primaryType={primaryType} />
       </div>

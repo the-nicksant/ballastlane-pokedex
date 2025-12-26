@@ -1,19 +1,26 @@
 import type Database from "better-sqlite3";
 import type { UserRepository } from "@/core/domain/repositories/user.repository";
 import type { User, Session } from "@/core/domain/entities/user.entity";
-import { db } from "../connection";
+import { DatabaseConnection } from "../connection";
 
 /**
  * SQLite implementation of UserRepository
  */
 export class UserRepositoryImpl implements UserRepository {
-  constructor(private database: Database.Database = db) {}
+  constructor(private database?: Database.Database) {}
+
+  /**
+   * Get the database instance (use provided or get from singleton)
+   */
+  private getDb(): Database.Database {
+    return this.database || DatabaseConnection.getInstance();
+  }
 
   /**
    * Find a user by username
    */
   findByUsername(username: string): User | null {
-    const row = this.database
+    const row = this.getDb()
       .prepare(
         `SELECT id, username, password_hash as passwordHash, created_at as createdAt, updated_at as updatedAt
          FROM users
@@ -32,7 +39,7 @@ export class UserRepositoryImpl implements UserRepository {
    * Find a user by ID
    */
   findById(id: number): User | null {
-    const row = this.database
+    const row = this.getDb()
       .prepare(
         `SELECT id, username, password_hash as passwordHash, created_at as createdAt, updated_at as updatedAt
          FROM users
@@ -53,7 +60,7 @@ export class UserRepositoryImpl implements UserRepository {
   createSession(userId: number, sessionId: string, expiresAt: Date): Session {
     const expiresAtSeconds = Math.floor(expiresAt.getTime() / 1000);
 
-    const result = this.database
+    const result = this.getDb()
       .prepare(
         `INSERT INTO sessions (id, user_id, expires_at)
          VALUES (?, ?, ?)`
@@ -79,7 +86,7 @@ export class UserRepositoryImpl implements UserRepository {
   findSessionById(sessionId: string): Session | null {
     const now = Math.floor(Date.now() / 1000);
 
-    const row = this.database
+    const row = this.getDb()
       .prepare(
         `SELECT id, user_id as userId, expires_at as expiresAt, created_at as createdAt
          FROM sessions
@@ -98,7 +105,7 @@ export class UserRepositoryImpl implements UserRepository {
    * Delete a session by ID
    */
   deleteSession(sessionId: string): boolean {
-    const result = this.database
+    const result = this.getDb()
       .prepare(`DELETE FROM sessions WHERE id = ?`)
       .run(sessionId);
 
@@ -109,7 +116,7 @@ export class UserRepositoryImpl implements UserRepository {
    * Delete all sessions for a user
    */
   deleteUserSessions(userId: number): number {
-    const result = this.database
+    const result = this.getDb()
       .prepare(`DELETE FROM sessions WHERE user_id = ?`)
       .run(userId);
 

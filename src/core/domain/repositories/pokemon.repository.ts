@@ -1,5 +1,4 @@
 import type {
-  Pokemon,
   PokemonDetail,
   PokemonListResult,
   PokemonSortBy,

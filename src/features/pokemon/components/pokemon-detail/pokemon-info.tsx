@@ -16,7 +16,7 @@ export function PokemonInfo({ pokemon }: PokemonInfoProps) {
         {pokemon.types.map((type) => (
           <span
             key={type}
-            className="px-4 py-1 rounded-full text-white text-xs font-bold font-[Poppins,sans-serif] capitalize"
+            className="px-4 py-1 rounded-full text-white text-xs font-bold font-poppins capitalize"
             style={{ backgroundColor: TYPE_COLORS[type] }}
           >
             {type}
@@ -25,7 +25,7 @@ export function PokemonInfo({ pokemon }: PokemonInfoProps) {
       </div>
 
       <h2
-        className="text-center font-bold text-sm mb-4 font-[Poppins,sans-serif]"
+        className="text-center font-bold text-sm mb-4 font-poppins"
         style={{ color: pokemon.types[0] ? TYPE_COLORS[pokemon.types[0]] : "#74CB48" }}
       >
         About
@@ -48,11 +48,11 @@ export function PokemonInfo({ pokemon }: PokemonInfoProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-sm font-normal text-[#1D1D1D] font-[Poppins,sans-serif]">
+            <span className="text-sm font-normal text-pokemon-text font-poppins">
               {weight} kg
             </span>
           </div>
-          <span className="text-xs text-[#666] font-[Poppins,sans-serif]">Weight</span>
+          <span className="text-xs text-pokemon-text-secondary font-poppins">Weight</span>
         </div>
 
         <div className="text-center border-l border-r border-gray-200">
@@ -71,27 +71,22 @@ export function PokemonInfo({ pokemon }: PokemonInfoProps) {
                 strokeLinejoin="round"
               />
             </svg>
-            <span className="text-sm font-normal text-[#1D1D1D] font-[Poppins,sans-serif]">
+            <span className="text-sm font-normal text-pokemon-text font-poppins">
               {height} m
             </span>
           </div>
-          <span className="text-xs text-[#666] font-[Poppins,sans-serif]">Height</span>
+          <span className="text-xs text-pokemon-text-secondary font-poppins">Height</span>
         </div>
 
         <div className="text-center">
           <div className="mb-1">
-            <span className="text-sm font-normal text-[#1D1D1D] font-[Poppins,sans-serif] capitalize">
+            <span className="text-sm font-normal text-pokemon-text font-poppins capitalize">
               {mainMoves || "None"}
             </span>
           </div>
-          <span className="text-xs text-[#666] font-[Poppins,sans-serif]">Moves</span>
+          <span className="text-xs text-pokemon-text-secondary font-poppins">Moves</span>
         </div>
       </div>
-
-      <p className="text-[10px] leading-4 text-[#1D1D1D] text-center font-[Poppins,sans-serif]">
-        There is a plant seed on its back right from the day this Pokémon is
-        born. The seed slowly grows larger.
-      </p>
     </div>
   );
 }
