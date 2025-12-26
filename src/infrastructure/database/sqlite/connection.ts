@@ -33,6 +33,9 @@ class DatabaseConnection {
       const isTest = process.env.NODE_ENV === "test";
       const isInMemory = dbPath === ":memory:";
 
+      // Detect Next.js build phase (happens before actual runtime)
+      const isBuildPhase = process.env.NEXT_PHASE === "phase-production-build";
+
       // Check if database already exists
       const dbExists = !isInMemory && fs.existsSync(absolutePath);
 
@@ -51,10 +54,12 @@ class DatabaseConnection {
       }
 
       // Create database connection
-      // In production, use readonly mode to prevent write attempts
+      // In production runtime or build phase, use readonly mode to prevent write attempts
+      const useReadonly = (isProduction || isBuildPhase) && dbExists;
+
       const db = new Database(absolutePath, {
         verbose: process.env.NODE_ENV === "development" ? console.log : undefined,
-        readonly: isProduction && dbExists,
+        readonly: useReadonly,
       });
 
       // Enable foreign keys (readonly safe)
@@ -64,7 +69,8 @@ class DatabaseConnection {
       // 1. In development mode, OR
       // 2. Database doesn't exist yet, OR
       // 3. In test mode with in-memory database
-      const shouldRunMigrations = !isProduction || !dbExists || (isTest && isInMemory);
+      // Never run during Next.js build phase
+      const shouldRunMigrations = !isBuildPhase && (!isProduction || !dbExists || (isTest && isInMemory));
 
       if (shouldRunMigrations) {
         console.log("🔄 Running migrations...");
@@ -79,9 +85,15 @@ class DatabaseConnection {
         console.log("⏭️  Skipping migrations (using pre-built database)");
       }
 
-      // Start automatic session cleanup (runs every hour) - skip in test mode
-      if (!isTest) {
+      // Start automatic session cleanup ONLY if:
+      // 1. Not in test mode
+      // 2. Not in build phase
+      // 3. Database is NOT readonly (requires write access)
+      if (!isTest && !isBuildPhase && !useReadonly) {
+        console.log("🧹 Starting session cleanup...");
         startSessionCleanup(db);
+      } else if (useReadonly) {
+        console.log("⏭️  Skipping session cleanup (readonly database)");
       }
 
       console.log("✅ Database initialized successfully");
