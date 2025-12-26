@@ -10,6 +10,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:ui": "vitest --ui",
+    "db:init": "tsx scripts/init-db.ts",
     "test:coverage": "vitest run --coverage",
     "postinstall": "cd node_modules/.pnpm/better-sqlite3@12.5.0/node_modules/better-sqlite3 && npm run build-release || true"
   },
@@ -55,6 +56,7 @@
     "@types/react-dom": "^19",
     "@types/react-input-mask": "^3.0.6",
     "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/coverage-v8": "4.0.16",
     "@vitest/ui": "^4.0.16",
     "eslint": "^9",
     "eslint-config-next": "16.1.1",
