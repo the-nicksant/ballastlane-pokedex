@@ -9,6 +9,8 @@ A modern, high-performance Pokédex application built with Next.js 16, featuring
 
 > **📘 Development Journey:** See [Prompt Engineering Timeline](./docs/prompts-used.md) for a detailed chronicle of the iterative development process, showcasing strategic prompt engineering techniques used to build this production-ready application.
 
+> **🤖 Generative AI Task :** See [Generative AI Task](./docs/generative-ai-task.md) to check my thinking process on prompt engineering for designing a complex Table Component.
+
 ---
 
 ## 🎯 Project Overview
