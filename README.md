@@ -21,6 +21,117 @@ The project demonstrates how strategic architectural decisions can create a smoo
 
 ---
 
+## 📖 User Stories
+
+The following user stories validate the implemented functionality and demonstrate the value delivered by this application.
+
+### User Story #1: Secure Access to Pokédex
+**As a** Pokémon enthusiast
+**I want to** log in with my credentials
+**So that** I can access my personal Pokédex and keep my collection private
+
+**Acceptance Criteria:**
+- [x] User can enter username and password in a login form
+- [x] System validates credentials (admin/admin)
+- [x] Invalid credentials show clear error messages
+- [x] Form shows validation errors for empty fields
+- [x] Successful login redirects to Pokemon list
+- [x] Session persists across page refreshes
+- [x] User remains logged in for 7 days
+- [x] Already logged-in users are redirected to main page
+- [x] Protected routes redirect to login when not authenticated
+
+---
+
+### User Story #2: Browse Pokemon Collection
+**As a** user
+**I want to** browse through all available Pokemon in a scrollable list
+**So that** I can discover and explore the entire Pokemon universe
+
+**Acceptance Criteria:**
+- [x] Pokemon list displays on the home page after login
+- [x] Each Pokemon card shows sprite image, name, and number
+- [x] List loads more Pokemon automatically as I scroll (infinite scroll)
+- [x] Only visible Pokemon are rendered for optimal performance (virtualization)
+- [x] Loading indicator appears while fetching more Pokemon
+- [x] Images have fallback placeholder when sprite is unavailable
+- [x] List fills the viewport on initial load
+- [x] Smooth scrolling experience on mobile and desktop
+
+---
+
+### User Story #3: Search for Specific Pokemon
+**As a** user
+**I want to** search for Pokemon by name
+**So that** I can quickly find specific Pokemon without scrolling
+
+**Acceptance Criteria:**
+- [x] Search bar is prominently displayed at the top of the page
+- [x] Search suggestions appear as I type (autocomplete)
+- [x] Results show matching Pokemon with sprites
+- [x] Search is debounced to avoid excessive requests
+- [x] Clicking a result navigates to Pokemon detail page
+- [x] Search input clears after navigation
+- [x] "No results" message displays when no matches found
+- [x] Search works for partial Pokemon names
+
+---
+
+### User Story #4: Sort Pokemon Collection
+**As a** user
+**I want to** sort Pokemon by name or number
+**So that** I can organize my view based on my preference
+
+**Acceptance Criteria:**
+- [x] Sort button is accessible in the header
+- [x] Dropdown shows sort options (by number, by name)
+- [x] Current sort state is displayed (ascending/descending)
+- [x] Clicking same option toggles sort order
+- [x] Sort preference is saved in URL (shareable links)
+- [x] List updates immediately after sort selection
+- [x] Sort state persists across page refreshes
+
+---
+
+### User Story #5: View Detailed Pokemon Information
+**As a** user
+**I want to** click on a Pokemon card
+**So that** I can view detailed information about that Pokemon
+
+**Acceptance Criteria:**
+- [x] Clicking a Pokemon card navigates to detail page
+- [x] Detail page shows Pokemon artwork (high-resolution)
+- [x] Pokemon name and number are displayed
+- [x] Type badges show all Pokemon types with correct colors
+- [x] Physical attributes displayed (weight, height)
+- [x] Abilities are listed
+- [x] Base stats are shown with visual bars
+- [x] Stat bars animate on page load
+- [x] Background color matches Pokemon's primary type
+- [x] Page is responsive on all screen sizes
+
+---
+
+### User Story #6: Navigate Between Pokemon Seamlessly
+**As a** user
+**I want to** navigate to previous/next Pokemon from the detail page
+**So that** I can explore Pokemon sequentially without returning to the list
+
+**Acceptance Criteria:**
+- [x] Previous/Next arrow buttons are visible
+- [x] Clicking next arrow navigates to next Pokemon
+- [x] Clicking previous arrow navigates to previous Pokemon
+- [x] Navigation is instant with no loading states
+- [x] Background color transitions smoothly
+- [x] Image carousel slides before navigation
+- [x] Adjacent Pokemon data is prefetched
+- [x] First Pokemon hides previous button
+- [x] Navigation buttons are disabled during transitions
+- [x] Browser back/forward buttons work correctly
+
+
+---
+
 ## ✨ Key Features
 
 ### User Experience First
